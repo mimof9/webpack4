@@ -26,6 +26,7 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'build')
+        // publicPath: 'https://abc/'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -38,7 +39,7 @@ module.exports = {
             // hash: true
         }),
         new MiniCssExtractPlugin({
-            filename: 'main.css'
+            filename: 'css/main.css'
         })
         // new webpack.ProvidePlugin({ // 在每个模块中都注入$
         //     $: 'jquery'
@@ -49,6 +50,23 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.html$/,
+                use: 'html-withimg-loader'
+            },
+            {
+                test: /\.(jpg|png|gif)$/,
+                // use: 'file-loader'
+                use: {
+                    loader: 'url-loader',
+                    options: {
+                        // limit: 200*1024 // 小于200k的图片用datauri 大于的用file-loader
+                        limit: 1,
+                        outputPath: 'img/',
+                        publicPath: 'https://abc/'
+                    }
+                }
+            },
             // {
             //     test: require.resolve('jquery'),
             //     use: 'expose-loader?$'
@@ -83,12 +101,13 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [
-                    {
-                        loader: 'style-loader',
-                        options: {
-                            insertAt: 'top'
-                        }
-                    },
+                    MiniCssExtractPlugin.loader,
+                    // {
+                    //     loader: 'style-loader',
+                    //     options: {
+                    //         insertAt: 'top'
+                    //     }
+                    // },
                     'css-loader',
                     'postcss-loader'
                 ]

@@ -88,4 +88,27 @@
 - externals: { jquery: '$' }
 - 不需要loader 需要考虑import的多余打包
 
+# 图片
+- 首先要明确引入图片有几种方式：1.在js中创建Image添加进body 2.在css使用background('url') 3.<img src="">
 
+## js引入图片
+- 在js中直接指定src = './xxx.jpg' 没有作用，这是普通的字符串，不会当作图片去打包
+- 要使用require('./xxx.jpg')去导入 把图片当作模块去导入的话需要loader： file-loader
+
+## css引入背景图片
+- css是由css那一系列的loader处理的 默认会对背景url进行处理（添加require()）
+
+## img标签中使用src属性引入图片 可想而知也是不打包的 所以会出问题
+- 在html中使用<img src='./logo.jpg'> 安装loader处理html文件 会把这种图片打包并替换src值
+- 安装处理的loader： yarn add html-withimg-loader -D
+
+### 图片小的时候 变成data-uri
+- 安装url-loader： yarn add url-loader -D
+
+# 图片和样式都可以指定输出的文件夹
+- 图片指定outputPath
+- css指定new MiniCssExtractPlugin({ filename: 'css/main.css' })
+
+# 添加前缀，比如说可能需要把图片放到cdn中，就需要给图片资源都添加前缀
+- output中添加publicPath: 'https://cdn/' 这样css或者js都会添加前缀
+- 如果只需要给图片添加前缀 那么只用url-loader选项中的publicPath即可
