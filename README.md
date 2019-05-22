@@ -29,6 +29,7 @@
 - yarn add css-loader -D 解析@import
 - yarn add style-loader -D 把css用style标签插入到模板head的后面
 - yarn add less less-loader -D 预处理器(也可以用sass的)
+- 需要注意 一个rule里的loader从右向左执行，rules里大方向的loader也是从后向前执行，可以使用enforce:pre改变顺序
 
 ## css添加浏览器前缀
 - yarn add postcss-loader -D 添加loader
@@ -48,5 +49,43 @@
 - 安装uglifyjs-webpack-plugin： yarn add uglifyjs-webpack-plugin -D
 - 和上述相同，配置new UglifyjsWebpackPlugin()即可
 
+# es6转换成es5
+- 安装babel: yarn add babel-loader @babel/core @babel/preset-env -D
+- babel-loader是loader @babel/core是解析js，调用转换 @babel/preset-env是具体做转换的
+- ES7的类属性 yarn add @babel/plugin-proposal-class-properties -D 其中proposal说明这个插件还在提案中
+- 还有其他的比如说装饰器 都需要安装相应插件 可以在babel官网查找如何配置 yarn add @babel/plugin-proposal-decorators -D
+
+## js优化 抽离公共方法
+- yarn add @babel/plugin-transform-runtime -D 开发阶段时使用
+- 运行时需要依赖 yarn add @babel/runtime
+
+### 需要注意 上述方法不能对实例的方法进行优化 需要安装@babel/polyfill
+- yarn add @babel/polyfill 运行时依赖
+- 然后在js中require('@babel/polyfill')
+
+### js代码的校验 ESLint
+- yarn add eslint eslint-loader -D
+- 配置文件可以直接在官网的demo(演示中)选择下载
+
+# 引入第三方模块(三种方式 expose-loader暴露到window providePlugin给每个模块注入 引入不打包)
+- 安装jquery： yarn add jquery
+
+## 浏览器上的jquery是绑定到window上了的为了实现一样的效果
+- 导入import $ from 'jquery'
+- 安装expose-loader：yarn add expose-loader
+
+## 补充loader的分类： pre normal post 内联 四种loader
+- 内联导入jquery,暴露$给全局变量: import $ from 'expose-loader?$!jquery'
+- 当然也可以直接在webpack.config.js的loader中配置
+- use: 'expose-loader?$'
+
+## 这样使用的话 每次都还是需要去import 如果想直接使用$的话 就需要想每个模块中注入
+- 使用webpack插件 ProvidePlugin 注入
+- new webpack.ProvidePlugin({ $: 'jquery' })
+- 不需要import 不需要loader
+
+## 在模板中引入cdn的jquery 此时如果在js文件中又import了 就会打包 需要配置externals说明是外部引入的不打包
+- externals: { jquery: '$' }
+- 不需要loader 需要考虑import的多余打包
 
 

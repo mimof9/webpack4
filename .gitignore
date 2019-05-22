@@ -3,3 +3,9 @@
 
 # node_modules
 node_modules
+
+# yarn log
+yarn-error.log
+
+# build
+build
