@@ -36,3 +36,22 @@
 ## 在nodejs中启动webpack 相当于前后端不分离了 服务端和前端启动在一个端口上
 - yarn add webpack-dev-middleware -D
 - 然后在express代码中 启动它 代码比较固定
+
+# 导入第三方模块的时候 默认导入js文件 比如果bootstrap默认导入js
+- 配置别名 resolve: { alias: {} } 导入时的书写
+- 配置别名也挺麻烦 修改默认查找的规则： resolve: { mainFiled: ['style', 'main'] }
+## 当导入的时候 我们经常省略扩展名
+- 配置 resolve: { extensions: ['.js', '.css'] } 自动补全扩展名
+
+# 定义环境变量
+— webpack内置插件 DefinePlugin
+- new webpack.DefinePlugin({ DEV: JSON.stringify('production'), flag: 'true' })
+- 需要注意 如果是字符串 需要多加一层引号 或者用JSON.stringify()转换成字符串
+
+# 为开发环境和生产环境配置不同的配置文件
+- 安装webpack-merge: yarn add webpack-merge -D
+- 写一个webpack.base.js 做通用的配置
+- 写一个webpack.dev.js 做开发配置
+- 写一个webpack.prod.js 做生产配置
+- 在开发和生产配置中 使用webpack-merge导入smart 用过smart合并base和当前配置文件
+- 打包的时候 只当dev或者prod配置文件

@@ -7,29 +7,29 @@ let webpack = require('webpack')
 module.exports = {
     devServer: {
         // 前端模拟数据
-        before(app) {
-            app.get('/user', (req, res) => {
-                res.json({name: '简单的node服务端'})
-            })
-        }
-      // proxy: {
-      //     // '/api': 'http://localhost:3000' // 配置了一个代理 访问api开头 转发到3000
-      //     '/api': {
-      //         target: 'http://localhost:3000',
-      //         pathRewrite: {'/api': ''}     // 重写路径
-      //     }
-      // }
+        // before(app) {
+        //     app.get('/user', (req, res) => {
+        //         res.json({name: '简单的node服务端'})
+        //     })
+        // }
+      proxy: {
+          // '/api': 'http://localhost:3000' // 配置了一个代理 访问api开头 转发到3000
+          '/api': {
+              target: 'http://localhost:3000',
+              pathRewrite: {'/api': ''}     // 重写路径
+          }
+      }
     },
     // 多入口
     mode: 'production',
     entry: {
         index: './src/index.js'
     },
-    output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, 'dist')
-    },
     plugins: [
+        new webpack.DefinePlugin({
+            DEV: JSON.stringify('production'),
+            FLAG: 'true'
+        }),
         new HtmlWebpackPlugin({
             template: './index.html',
             filename: 'index.html'
@@ -42,8 +42,20 @@ module.exports = {
         // ]),
         // new webpack.BannerPlugin('mimof9版权所有')
     ],
+    resolve: { // 导入第三方模块 默认先从当前目录下寻找 然后一层层往上找
+        modules: [path.resolve('node_modules')], // 配置旨在当前目录找
+        extensions: ['.js', '.css', '.json'],    // 从左到右依次补全后缀
+        mainFields: ['style', 'main']
+        // alias: {    // 别名
+        //     bootstrap: 'bootstrap/dist/css/bootstrap.css'
+        // }
+    },
     module: {
         rules: [
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            },
             {
                 test: /\.js$/,
                 use: {
